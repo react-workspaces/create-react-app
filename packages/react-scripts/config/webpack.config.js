@@ -335,7 +335,11 @@ module.exports = function(webpackEnv) {
               loader: require.resolve('eslint-loader'),
             },
           ],
-          include: paths.appSrc,
+          include: isEnvDevelopment && workspacesConfig.development
+          ? [paths.appSrc, workspacesConfig.paths]
+          : isEnvProduction && workspacesConfig.production
+            ? [paths.appSrc, workspacesConfig.paths]
+            : paths.appSrc,
         },
         {
           // "oneOf" will traverse all following loaders until one will
