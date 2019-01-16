@@ -1,6 +1,6 @@
 {
   "name": "@f1lt3r/react-scripts",
-  "version": "2.1.1-monorepo-02",
+  "version": "2.1.1-workspaces-04",
   "description": "Configuration and scripts for Create React App.",
   "repository": "f1lt3r/create-react-app",
   "license": "MIT",

@@ -24,23 +24,23 @@ const getWorkspacesRootConfig = dir => {
   const packageObj = loadPackageJson(packageJsonUp);
 
   if (Reflect.has(packageObj, 'workspaces')) {
-    const workspacesConfig = {
+    const workspacesRootConfig = {
       root: path.dirname(packageJsonUp),
-      packages: packageObj.workspaces,
+      workspaces: packageObj.workspaces,
     };
-    return workspacesConfig;
+    return workspacesRootConfig;
   }
 
   const dirUp = path.dirname(dir);
   return getWorkspacesRootConfig(dirUp);
 };
 
-const getPackagePaths = workspaces => {
+const getPackagePaths = (root, workspacesList) => {
   const packageList = [];
 
-  workspaces.packages.forEach(workspace => {
+  workspacesList.forEach(workspace => {
     const workspaceDir = path.dirname(workspace);
-    const workspaceAbsDir = path.join(workspaces.root, workspaceDir);
+    const workspaceAbsDir = path.join(root, workspaceDir);
     const packageJsonGlob = path.join('**!(node_modules)', 'package.json');
     const packageJsonAbsPaths = glob
       .sync(packageJsonGlob, { cwd: workspaceAbsDir })
@@ -68,8 +68,8 @@ const getDeep = (obj, keyChain) => {
   return false;
 };
 
-const resolveBabelLoaderPaths = (workspaces, packageEntry) => {
-  const packageJsonPaths = getPackagePaths(workspaces);
+const resolveBabelLoaderPaths = ({root, workspacesList}, packageEntry) => {
+  const packageJsonPaths = getPackagePaths(root, workspacesList);
   const babelLoaderPaths = [];
 
   packageJsonPaths.map(absPkgPath => {
@@ -130,12 +130,25 @@ const init = paths => {
     production: true,
   };
 
-  const workspaces = getWorkspacesRootConfig(paths.appPath);
-  if (workspaces.packages.length === 0) {
+  const {root, workspaces} = getWorkspacesRootConfig(paths.appPath);
+  const workspacesList = [];
+
+  // Normally "workspaces" in package.json is an array
+  if (Array.isArray(workspaces)) {
+    workspacesList.push(...workspaces);
+  }
+  // Sometimes "workspaces" in package.json is an object
+  // with a ".packages" sub-array, eg: when used with "nohoist"
+  // See: https://yarnpkg.com/blog/2018/02/15/nohoist
+  if (!Array.isArray(workspaces)) {
+    workspacesList.push(...workspaces.packages);
+  }
+
+  if (workspacesList.length === 0) {
     return config;
   }
   console.log('Yarn Workspaces paths detected.');
-  config.root = workspaces.root;
+  config.root = root;
 
   const appSettings = loadAppSettings(paths.appPackageJson);
 
@@ -152,7 +165,7 @@ const init = paths => {
   }
 
   const babelSrcPaths = resolveBabelLoaderPaths(
-    workspaces,
+    {root, workspacesList},
     config.packageEntry
   );
   console.log(
