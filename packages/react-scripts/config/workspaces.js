@@ -136,19 +136,63 @@ const guard = (appDirectory, appPackageJson) => {
 	}
 };
 
-const getPkgName = path => {
-	const packageJsonUp = findUp.sync('package.json', {cwd: path});
-	const name = loadPackageJson(packageJsonUp).name;
-	return name;
+const getPkg = path => {
+	const pkgPath = findUp.sync('package.json', {cwd: path});
+	const pkg = loadPackageJson(pkgPath);
+	return pkg;
+};
+
+const getDeps = pkg => {
+	const deps = getDeep(pkg, ['dependencies']);
+	const devDeps = getDeep(pkg, ['devDependencies']);
+
+	let dependencies = {};
+
+	if (deps) {
+		dependencies = Object.assign(dependencies, deps);
+	}
+
+	if (devDeps) {
+		dependencies = Object.assign(dependencies, devDeps);
+	}
+
+	return dependencies;
+};
+
+const depsTable = {};
+
+const filterDeps = deps =>
+	Reflect.ownKeys(deps).filter(dep => Reflect.has(depsTable, dep));
+
+const filterDepsTable = () => {
+	Reflect.ownKeys(depsTable).forEach(depName => {
+		const depsList = depsTable[depName].deps;
+		const workspacesOnlyDeps = filterDeps(depsList);
+		depsTable[depName].deps = workspacesOnlyDeps;
+	});
+};
+
+const buildDepsTable = srcPaths => {
+	srcPaths.forEach(path => {
+		const pkg = getPkg(path);
+		const name = pkg.name;
+		const deps = getDeps(pkg);
+		depsTable[name] = {path, deps};
+	});
 };
 
 const filterSrcPaths = (srcPaths, dependencies) => {
 	const filteredPaths = [];
 
 	srcPaths.forEach(path => {
-		const pkgName = getPkgName(path);
-		if (dependencies && Reflect.has(dependencies, pkgName)) {
+		const pkg = getPkg(path);
+
+		if (dependencies && Reflect.has(dependencies, pkg.name)) {
 			filteredPaths.push(path);
+
+			const subDeps = depsTable[pkg.name].deps;
+			const subPaths = filterSrcPaths(srcPaths, subDeps);
+			filteredPaths.push(...subPaths);
 		}
 	});
 
@@ -205,9 +249,12 @@ const init = paths => {
 		config.packageEntry
 	);
 
+	buildDepsTable(babelSrcPaths);
+
 	const applicableSrcPaths = filterSrcPaths(
 		babelSrcPaths,
-		appSettings.dependencies
+		appSettings.dependencies,
+		paths.appPath
 	);
 
 	console.log(
@@ -222,7 +269,6 @@ const init = paths => {
 
 	console.log('Exporting Workspaces config to Webpack.');
 	console.log(config);
-
 	return config;
 };
 
