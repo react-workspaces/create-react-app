@@ -1,8 +1,8 @@
 {
-  "name": "@f1lt3r/react-scripts",
-  "version": "2.1.1-workspaces-05",
+  "name": "@react-workspaces/react-scripts",
+  "version": "2.1.1-workspaces-06",
   "description": "Configuration and scripts for Create React App.",
-  "repository": "f1lt3r/create-react-app",
+  "repository": "react-workspaces/create-react-app",
   "license": "MIT",
   "engines": {
     "node": ">=6"

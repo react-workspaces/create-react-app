@@ -93,8 +93,20 @@ const loadAppSettings = appPackageJson => {
 	const appPackageObj = loadPackageJson(appPackageJson);
 
 	const dependencies = getDeep(appPackageObj, ['dependencies']);
-	result.dependencies = dependencies;
-	if (!dependencies) return result;
+	const devDependencies = getDeep(appPackageObj, ['devDependencies']);
+
+	if (!dependencies && !devDependencies) return result;
+
+	if (dependencies) {
+		result.dependencies = Object.assign(result.dependencies, dependencies);
+	}
+
+	if (devDependencies) {
+		result.dependencies = Object.assign(
+			result.dependencies,
+			devDependencies
+		);
+	}
 
 	const reactScripts = getDeep(appPackageObj, ['react-scripts']);
 	if (!reactScripts) return result;
@@ -135,7 +147,7 @@ const filterSrcPaths = (srcPaths, dependencies) => {
 
 	srcPaths.forEach(path => {
 		const pkgName = getPkgName(path);
-		if (Reflect.has(dependencies, pkgName)) {
+		if (dependencies && Reflect.has(dependencies, pkgName)) {
 			filteredPaths.push(path);
 		}
 	});
