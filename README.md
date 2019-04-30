@@ -6,7 +6,7 @@ See [React Workspaces Playground](https://github.com/react-workspaces/react-work
 
 [![React Workspaces Playground Screenshots](https://i.imgur.com/7snWXD0.png)](https://github.com/react-workspaces/react-workspaces-playground)
 
-For more information on why this ways created, please read this for more info: https://github.com/F1LT3R/cra-workspaces-support-1333
+For more information on why this ways created, please read this for more info: [Support Lerna and/or Yarn Workspaces #1333](https://github.com/facebook/create-react-app/issues/1333)
 
 # Create React App [![Build Status](https://travis-ci.org/facebook/create-react-app.svg?branch=master)](https://travis-ci.org/facebook/create-react-app) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg)](https://github.com/facebook/create-react-app/pulls)
 
