@@ -251,11 +251,9 @@ const init = paths => {
 
 	buildDepsTable(babelSrcPaths);
 
-	const applicableSrcPaths = filterSrcPaths(
-		babelSrcPaths,
-		appSettings.dependencies,
-		paths.appPath
-	);
+	const applicableSrcPaths = [
+		...new Set(filterSrcPaths(babelSrcPaths, appSettings.dependencies))
+	];
 
 	console.log(
 		`Found ${babelSrcPaths.length} path(s) with "${
