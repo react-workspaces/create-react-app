@@ -1,6 +1,6 @@
 {
   "name": "@react-workspaces/react-scripts",
-  "version": "3.0.0-alpha-03",
+  "version": "3.0.0-alpha-04",
   "description": "Configuration and scripts for Create React App.",
   "repository": {
     "type": "git",
