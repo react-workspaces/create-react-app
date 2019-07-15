@@ -161,17 +161,6 @@ const getDeps = pkg => {
 
 const depsTable = {};
 
-const filterDeps = deps =>
-	Reflect.ownKeys(deps).filter(dep => Reflect.has(depsTable, dep));
-
-const filterDepsTable = () => {
-	Reflect.ownKeys(depsTable).forEach(depName => {
-		const depsList = depsTable[depName].deps;
-		const workspacesOnlyDeps = filterDeps(depsList);
-		depsTable[depName].deps = workspacesOnlyDeps;
-	});
-};
-
 const buildDepsTable = srcPaths => {
 	srcPaths.forEach(path => {
 		const pkg = getPkg(path);
