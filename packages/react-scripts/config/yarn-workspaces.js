@@ -23,7 +23,13 @@ const getWorkspacesRootConfig = dir => {
 
 	const packageObj = loadPackageJson(packageJsonUp);
 
-	if (Reflect.has(packageObj, 'workspaces')) {
+	if (
+		packageObj.workspaces &&
+		(
+		Array.isArray(packageObj.workspaces) ||
+		Reflect.has(packageObj.workspaces, 'packages')
+		)
+	) {
 		const workspacesRootConfig = {
 			root: path.dirname(packageJsonUp),
 			workspaces: packageObj.workspaces
