@@ -75,6 +75,13 @@ module.exports = function(webpackEnv) {
         ? workspacesMainFields
         : undefined;
 
+  const includePaths =
+    isEnvDevelopment && workspacesConfig.development
+      ? [paths.appSrc, ...workspacesConfig.paths]
+      : isEnvProduction && workspacesConfig.production
+      ? [paths.appSrc, ...workspacesConfig.paths]
+      : paths.appSrc;
+
   // Webpack uses `publicPath` to determine where the app is being served from.
   // It requires a trailing slash, or the file assets will get an incorrect path.
   // In development, we always serve from the root. This makes config easier.
@@ -347,11 +354,7 @@ module.exports = function(webpackEnv) {
               loader: require.resolve('eslint-loader'),
             },
           ],
-          include: isEnvDevelopment && workspacesConfig.development
-          ? [paths.appSrc, workspacesConfig.paths]
-          : isEnvProduction && workspacesConfig.production
-            ? [paths.appSrc, workspacesConfig.paths]
-            : paths.appSrc,
+          include: includePaths,
         },
         {
           // "oneOf" will traverse all following loaders until one will
@@ -373,12 +376,7 @@ module.exports = function(webpackEnv) {
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
-              include:
-              isEnvDevelopment && workspacesConfig.development
-                ? [paths.appSrc, workspacesConfig.paths]
-                : isEnvProduction && workspacesConfig.production
-                  ? [paths.appSrc, workspacesConfig.paths]
-                  : paths.appSrc,
+              include: includePaths,
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve(
@@ -661,6 +659,10 @@ module.exports = function(webpackEnv) {
           typescript: resolve.sync('typescript', {
             basedir: paths.appNodeModules,
           }),
+          compilerOptions: {
+            skipLibCheck: true,
+            suppressOutputPathCheck: true,
+          },
           async: isEnvDevelopment,
           useTypescriptIncrementalApi: true,
           checkSyntacticErrors: true,
@@ -672,7 +674,7 @@ module.exports = function(webpackEnv) {
             '!**/src/setupProxy.*',
             '!**/src/setupTests.*',
           ],
-          watch: paths.appSrc,
+          watch: includePaths,
           silent: true,
           // The formatter is invoked directly in WebpackDevServerUtils during development
           formatter: isEnvProduction ? typescriptFormatter : undefined,
