@@ -355,6 +355,12 @@ module.exports = function(webpackEnv) {
             },
           ],
           include: includePaths,
+          // Don't lint typescript files outside the main package because it has problems with some syntax rules, e.g. abstract
+          exclude: useTypeScript
+            ? file =>
+                /\.tsx?/.test(path.extname(file)) &&
+                !file.startsWith(paths.appSrc)
+            : undefined,
         },
         {
           // "oneOf" will traverse all following loaders until one will
