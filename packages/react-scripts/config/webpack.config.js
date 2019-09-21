@@ -62,7 +62,7 @@ module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
-  const workspacesMainFields = [workspacesConfig.packageEntry, 'main'];
+  const workspacesMainFields = [workspacesConfig.packageEntry, 'browser', 'module', 'main'];
   const mainFields =
     isEnvDevelopment && workspacesConfig.development
       ? workspacesMainFields
