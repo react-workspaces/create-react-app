@@ -62,13 +62,25 @@ module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
-  const workspacesMainFields = [workspacesConfig.packageEntry, 'main'];
+  const workspacesMainFields = [
+    workspacesConfig.packageEntry,
+    'browser',
+    'module',
+    'main',
+  ];
   const mainFields =
     isEnvDevelopment && workspacesConfig.development
       ? workspacesMainFields
       : isEnvProduction && workspacesConfig.production
         ? workspacesMainFields
         : undefined;
+
+  const includePaths =
+    isEnvDevelopment && workspacesConfig.development
+      ? [paths.appSrc, ...workspacesConfig.paths]
+      : isEnvProduction && workspacesConfig.production
+      ? [paths.appSrc, ...workspacesConfig.paths]
+      : paths.appSrc;
 
   // Webpack uses `publicPath` to determine where the app is being served from.
   // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -342,11 +354,13 @@ module.exports = function(webpackEnv) {
               loader: require.resolve('eslint-loader'),
             },
           ],
-          include: isEnvDevelopment && workspacesConfig.development
-          ? [paths.appSrc, workspacesConfig.paths]
-          : isEnvProduction && workspacesConfig.production
-            ? [paths.appSrc, workspacesConfig.paths]
-            : paths.appSrc,
+          include: includePaths,
+          // Don't lint typescript files outside the main package because it has problems with some syntax rules, e.g. abstract
+          exclude: useTypeScript
+            ? file =>
+                /\.tsx?/.test(path.extname(file)) &&
+                !file.startsWith(paths.appSrc)
+            : undefined,
         },
         {
           // "oneOf" will traverse all following loaders until one will
@@ -368,12 +382,7 @@ module.exports = function(webpackEnv) {
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
-              include:
-              isEnvDevelopment && workspacesConfig.development
-                ? [paths.appSrc, workspacesConfig.paths]
-                : isEnvProduction && workspacesConfig.production
-                  ? [paths.appSrc, workspacesConfig.paths]
-                  : paths.appSrc,
+              include: includePaths,
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve(
@@ -656,6 +665,10 @@ module.exports = function(webpackEnv) {
           typescript: resolve.sync('typescript', {
             basedir: paths.appNodeModules,
           }),
+          compilerOptions: {
+            skipLibCheck: true,
+            suppressOutputPathCheck: true,
+          },
           async: isEnvDevelopment,
           useTypescriptIncrementalApi: true,
           checkSyntacticErrors: true,
@@ -667,7 +680,7 @@ module.exports = function(webpackEnv) {
             '!**/src/setupProxy.*',
             '!**/src/setupTests.*',
           ],
-          watch: paths.appSrc,
+          watch: includePaths,
           silent: true,
           // The formatter is invoked directly in WebpackDevServerUtils during development
           formatter: isEnvProduction ? typescriptFormatter : undefined,
