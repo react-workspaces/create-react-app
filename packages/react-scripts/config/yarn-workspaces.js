@@ -101,7 +101,9 @@ const loadAppSettings = appPackageJson => {
 	const dependencies = getDeep(appPackageObj, ['dependencies']);
 	const devDependencies = getDeep(appPackageObj, ['devDependencies']);
 
-	if (!dependencies && !devDependencies) return result;
+	if (!dependencies && !devDependencies) {
+		return result;
+	}
 
 	if (dependencies) {
 		result.dependencies = Object.assign(result.dependencies, dependencies);
@@ -115,11 +117,15 @@ const loadAppSettings = appPackageJson => {
 	}
 
 	const reactScripts = getDeep(appPackageObj, ['react-scripts']);
-	if (!reactScripts) return result;
+	if (!reactScripts) {
+		return result;
+	}
 
 	const workspaces = getDeep(reactScripts, ['workspaces']);
 	result.workspaces = workspaces;
-	if (!workspaces) return result;
+	if (!workspaces) {
+		return result;
+	}
 
 	return workspaces;
 };

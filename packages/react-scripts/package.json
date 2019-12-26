@@ -1,7 +1,7 @@
 {
   "name": "@react-workspaces/react-scripts",
-  "version": "3.0.1-alpha-07",
-  "description": "React + Yarn Workspaces Configuration and scripts for Create React App.",
+  "version": "3.3.0-alpha-08",
+  "description": "Configuration and scripts for Create React App.",
   "repository": {
     "type": "git",
     "url": "https://github.com/react-workspaces/create-react-app.git",

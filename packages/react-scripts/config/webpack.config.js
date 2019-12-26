@@ -68,6 +68,27 @@ module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
+  const workspacesMainFields = [
+    workspacesConfig.packageEntry,
+    'browser',
+    'module',
+    'main',
+  ];
+  
+  const mainFields =
+    isEnvDevelopment && workspacesConfig.development
+      ? workspacesMainFields
+      : isEnvProduction && workspacesConfig.production
+        ? workspacesMainFields
+        : undefined;
+
+  const includePaths =
+    isEnvDevelopment && workspacesConfig.development
+      ? [paths.appSrc, ...workspacesConfig.paths]
+      : isEnvProduction && workspacesConfig.production
+      ? [paths.appSrc, ...workspacesConfig.paths]
+      : paths.appSrc;
+
   // Variable used for enabling profiling in Production
   // passed into alias object. Uses a flag if passed into the build command
   const isEnvProductionProfile =
@@ -404,12 +425,6 @@ module.exports = function(webpackEnv) {
             },
           ],
           include: includePaths,
-          // Don't lint typescript files outside the main package because it has problems with some syntax rules, e.g. abstract
-          exclude: useTypeScript
-            ? file =>
-                /\.tsx?/.test(path.extname(file)) &&
-                !file.startsWith(paths.appSrc)
-            : undefined,
         },
         {
           // "oneOf" will traverse all following loaders until one will
