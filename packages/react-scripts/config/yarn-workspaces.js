@@ -6,8 +6,12 @@ const findUp = require('find-up');
 const glob = require('glob');
 
 const loadPackageJson = packagePath => {
-	const packageObj = fse.readJsonSync(packagePath);
-	return packageObj;
+	try {
+		const packageObj = fse.readJsonSync(packagePath);
+		return packageObj;
+	} catch (err) {
+		throw err;
+	}
 };
 
 const getWorkspacesRootConfig = dir => {

@@ -11,6 +11,7 @@
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
+const findUp = require('find-up');
 
 // Make sure any symlinks in the project folder are resolved:
 // https://github.com/facebook/create-react-app/issues/637
@@ -122,7 +123,9 @@ module.exports = {
 };
 
 const ownPackageJson = require('../package.json');
-const reactScriptsPath = resolveApp(`node_modules/${ownPackageJson.name}`);
+const reactScriptsPath = findUp.sync(`node_modules/${ownPackageJson.name}`, {
+  cwd: resolveApp('.'),
+});
 const reactScriptsLinked =
   fs.existsSync(reactScriptsPath) &&
   fs.lstatSync(reactScriptsPath).isSymbolicLink();
