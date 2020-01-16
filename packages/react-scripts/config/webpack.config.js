@@ -62,6 +62,10 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 const workspacesConfig = yarnWorkspaces.init(paths);
 
+// Change directory to the workspace root, to resolve file paths in relation
+// to the workspace. Useful for backtracking errors, in context of the workspace root!
+process.chdir(workspacesConfig.root);
+
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
 module.exports = function(webpackEnv) {
