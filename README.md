@@ -1,3 +1,13 @@
+# :warning: WARNING!
+
+This is a custom scripts-version of React-Scripts that provides Monorepo support.
+
+See [React Workspaces Playground](https://github.com/react-workspaces/react-workspaces-playground) for a working demo.
+
+[![React Workspaces Playground Screenshots](https://i.imgur.com/7snWXD0.png)](https://github.com/react-workspaces/react-workspaces-playground)
+
+For more information on why this was created, please read this for more info: [Support Lerna and/or Yarn Workspaces #1333](https://github.com/facebook/create-react-app/issues/1333)
+
 # Create React App [![Build Status](https://dev.azure.com/facebook/create-react-app/_apis/build/status/facebook.create-react-app?branchName=master)](https://dev.azure.com/facebook/create-react-app/_build/latest?definitionId=1&branchName=master) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg)](https://github.com/facebook/create-react-app/blob/master/CONTRIBUTING.md)
 
 Create React apps with no build configuration.
@@ -16,6 +26,7 @@ npx create-react-app my-app
 cd my-app
 npm start
 ```
+
 If you've previously installed `create-react-app` globally via `npm install -g create-react-app`, we recommend you uninstall the package using `npm uninstall -g create-react-app` to ensure that npx always uses the latest version.
 
 _([npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) comes with npm 5.2+ and higher, see [instructions for older npm versions](https://gist.github.com/gaearon/4064d3c23a77c74a3614c498a8bb1c5f))_
