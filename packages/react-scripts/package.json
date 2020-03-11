@@ -1,7 +1,7 @@
 {
-  "name": "monorep-react-scripts",
+  "name": "@react-workspaces/react-scripts",
   "version": "3.3.0-alpha-08",
-  "description": "This is forked repo from react workspaces. Note: for testing. Don't use in production.Configuration and scripts for Create React App.",
+  "description": "Configuration and scripts for Create React App.",
   "repository": {
     "type": "git",
     "url": "https://github.com/react-workspaces/create-react-app.git",
