@@ -1,7 +1,7 @@
 {
-  "name": "@react-workspaces/react-scripts",
+  "name": "monorep-react-scripts",
   "version": "3.3.0-alpha-08",
-  "description": "Configuration and scripts for Create React App.",
+  "description": "This is forked repo from react workspaces. Note: for testing. Don't use in production.Configuration and scripts for Create React App.",
   "repository": {
     "type": "git",
     "url": "https://github.com/react-workspaces/create-react-app.git",
@@ -67,7 +67,7 @@
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "4.0.1",
     "react-app-polyfill": "^1.0.5",
-    "react-dev-utils": "^10.0.0",
+    "react-dev-utils": "10.1.0",
     "resolve": "1.12.2",
     "resolve-url-loader": "3.1.1",
     "sass-loader": "8.0.0",
