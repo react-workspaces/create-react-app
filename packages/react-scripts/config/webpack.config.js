@@ -28,6 +28,7 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
 const paths = require('./paths');
 const modules = require('./modules');
+const yarnWorkspaces = require('./yarn-workspaces');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
@@ -66,6 +67,12 @@ const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
+const workspacesConfig = yarnWorkspaces.init(paths);
+
+// Change directory to the workspace root, to resolve file paths in relation
+// to the workspace. Useful for backtracking errors, in context of the workspace root!
+process.chdir(workspacesConfig.root);
+
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
 module.exports = function (webpackEnv) {
@@ -76,6 +83,27 @@ module.exports = function (webpackEnv) {
   // passed into alias object. Uses a flag if passed into the build command
   const isEnvProductionProfile =
     isEnvProduction && process.argv.includes('--profile');
+
+  const workspacesMainFields = [
+    workspacesConfig.packageEntry,
+    'browser',
+    'module',
+    'main',
+  ];
+
+  const mainFields =
+    isEnvDevelopment && workspacesConfig.development
+      ? workspacesMainFields
+      : isEnvProduction && workspacesConfig.production
+      ? workspacesMainFields
+      : undefined;
+
+  const includePaths =
+    isEnvDevelopment && workspacesConfig.development
+      ? [paths.appSrc, ...workspacesConfig.paths]
+      : isEnvProduction && workspacesConfig.production
+      ? [paths.appSrc, ...workspacesConfig.paths]
+      : paths.appSrc;
 
   // We will provide `paths.publicUrlOrPath` to our app
   // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
@@ -313,6 +341,7 @@ module.exports = function (webpackEnv) {
       extensions: paths.moduleFileExtensions
         .map(ext => `.${ext}`)
         .filter(ext => useTypeScript || !ext.includes('ts')),
+      mainFields,
       alias: {
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -374,7 +403,7 @@ module.exports = function (webpackEnv) {
               loader: require.resolve('eslint-loader'),
             },
           ],
-          include: paths.appSrc,
+          include: includePaths,
         },
         {
           // "oneOf" will traverse all following loaders until one will
@@ -396,7 +425,7 @@ module.exports = function (webpackEnv) {
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
-              include: paths.appSrc,
+              include: includePaths,
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve(
@@ -713,6 +742,10 @@ module.exports = function (webpackEnv) {
           typescript: resolve.sync('typescript', {
             basedir: paths.appNodeModules,
           }),
+          compilerOptions: {
+            skipLibCheck: true,
+            suppressOutputPathCheck: true,
+          },
           async: isEnvDevelopment,
           checkSyntacticErrors: true,
           resolveModuleNameModule: process.versions.pnp
@@ -734,6 +767,7 @@ module.exports = function (webpackEnv) {
             '!**/src/setupProxy.*',
             '!**/src/setupTests.*',
           ],
+          watch: includePaths,
           silent: true,
           // The formatter is invoked directly in WebpackDevServerUtils during development
           formatter: isEnvProduction ? typescriptFormatter : undefined,
