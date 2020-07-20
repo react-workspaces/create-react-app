@@ -153,9 +153,9 @@ checkBrowsers(paths.appPath, isInteractive)
       });
     });
 
-    // We need this to close the WebPack Server
-    // Thanks @1player! https://github.com/facebook/create-react-app/issues/1753#issuecomment-329972786
-    if (process.env.CI !== 'true') {
+    if (isInteractive || process.env.CI !== 'true') {
+      // We need this to close the WebPack Server
+      // Thanks @1player! https://github.com/facebook/create-react-app/issues/1753#issuecomment-329972786
       // Gracefully exit when stdin ends
       process.stdin.on('end', function () {
         devServer.close();
